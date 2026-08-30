@@ -1,0 +1,130 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.orders",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "orders",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "identifier": "orders-prod",
+          "engine": "postgres",
+          "engine_version": "14.9",
+          "instance_class": "db.r6g.large",
+          "allocated_storage": 400,
+          "publicly_accessible": false,
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/9d1a",
+          "backup_retention_period": 14,
+          "deletion_protection": true,
+          "skip_final_snapshot": false,
+          "tags": {
+            "Environment": "production",
+            "Owner": "orders",
+            "DataClassification": "confidential"
+          }
+        },
+        "after": {
+          "identifier": "orders-prod",
+          "engine": "postgres",
+          "engine_version": "15.4",
+          "instance_class": "db.r6g.large",
+          "allocated_storage": 400,
+          "publicly_accessible": false,
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/9d1a",
+          "backup_retention_period": 14,
+          "deletion_protection": false,
+          "skip_final_snapshot": true,
+          "tags": {
+            "Environment": "production",
+            "Owner": "orders",
+            "DataClassification": "confidential"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_db_parameter_group.orders",
+      "mode": "managed",
+      "type": "aws_db_parameter_group",
+      "name": "orders",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "name": "orders-pg14",
+          "family": "postgres14",
+          "tags": {
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "name": "orders-pg15",
+          "family": "postgres15",
+          "tags": {
+            "Environment": "production"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_ssm_parameter.orders_endpoint",
+      "mode": "managed",
+      "type": "aws_ssm_parameter",
+      "name": "orders_endpoint",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "/orders/prod/db-endpoint",
+          "type": "String"
+        },
+        "after": {
+          "name": "/orders/prod/db-endpoint",
+          "type": "String"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_ssm_parameter.orders_endpoint",
+          "type": "aws_ssm_parameter",
+          "name": "orders_endpoint",
+          "expressions": {
+            "value": {
+              "references": ["aws_db_instance.orders.endpoint", "aws_db_instance.orders"]
+            }
+          }
+        },
+        {
+          "address": "aws_db_instance.orders",
+          "type": "aws_db_instance",
+          "name": "orders",
+          "expressions": {
+            "parameter_group_name": {
+              "references": ["aws_db_parameter_group.orders.name", "aws_db_parameter_group.orders"]
+            }
+          }
+        },
+        {
+          "address": "aws_ecs_task_definition.orders_api",
+          "type": "aws_ecs_task_definition",
+          "name": "orders_api",
+          "expressions": {
+            "container_definitions": {
+              "references": ["aws_db_instance.orders.address", "aws_db_instance.orders"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

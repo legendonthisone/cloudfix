@@ -1,0 +1,50 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_instance.api",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "ami": "ami-0c101f26f147fa7fd",
+          "instance_type": "m5.large",
+          "subnet_id": "subnet-0a1b2c3d",
+          "monitoring": true,
+          "root_block_device": [
+            {
+              "encrypted": true,
+              "volume_size": 100
+            }
+          ],
+          "tags": {
+            "Name": "api-prod-01",
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        },
+        "after": {
+          "ami": "ami-0f9de6e2d2f067fca",
+          "instance_type": "m5.large",
+          "subnet_id": "subnet-0a1b2c3d",
+          "monitoring": true,
+          "root_block_device": [
+            {
+              "encrypted": true,
+              "volume_size": 100
+            }
+          ],
+          "tags": {
+            "Name": "api-prod-01",
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        }
+      }
+    }
+  ]
+}

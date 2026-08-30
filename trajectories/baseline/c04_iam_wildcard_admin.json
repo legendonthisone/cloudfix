@@ -1,0 +1,89 @@
+{
+  "system": "baseline",
+  "case_id": "c04_iam_wildcard_admin",
+  "case_title": "CI deploy policy widened to full account admin",
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "plan_file": "data/plans/c04_iam_wildcard_admin.json",
+  "ground_truth": {
+    "expected_verdict": "DO NOT APPLY",
+    "rules": [
+      "D2"
+    ],
+    "why": "The policy goes from two scoped S3 actions to Action * on Resource *. That is D2, unbounded privilege, and it is granted to a CI role that anyone who can merge a pull request can reach.",
+    "difficulty": "easy"
+  },
+  "how_to_read": "Steps run in order. kind=tool is deterministic code, kind=model is a call to the language model, kind=skipped is a step this rung deliberately removed. Every model step carries the exact system_prompt and user_prompt it was sent, so the run can be followed from the instructions through to the verdict. A verify step's output.defects is the feedback handed back to the model, and the repair step after it shows what it did with that feedback.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "review",
+      "kind": "model",
+      "attempt": 1,
+      "system_prompt": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human decides.\n\nCloudFix verdict policy, version 1.\n\nA plan gets exactly one verdict. Work down the list and stop at the first match,\nso DO NOT APPLY beats REQUIRES HUMAN REVIEW, which beats SAFE.\n\nDO NOT APPLY. The change, if applied as written, does one of these:\n  D1  Makes data or an administrative interface reachable from the public\n      internet without authentication. This covers public object access on a\n      bucket holding data, a database with a public endpoint, and a remote\n      administration or database port open to 0.0.0.0/0. A bucket that is\n      configured as a static website is not this rule, it is R2.\n  D2  Grants unbounded privilege, meaning every action on every resource.\n  D3  Removes encryption from data that is encrypted today, or provisions\n      unencrypted storage in production.\n  D4  Destroys or replaces a production resource that holds data, or removes a\n      guard that protects one, such as turning off deletion protection or\n      skipping the final snapshot.\n  D5  Grants a container workload host level privilege in production.\n\nREQUIRES HUMAN REVIEW. None of the above, and one of these:\n  R1  A permission that is broad but bounded, such as every action in one\n      service restricted to named resources.\n  R2  Public exposure that may well be intended, such as a static website bucket\n      or a load balancer on 80 and 443, where the plan alone cannot confirm the\n      intent.\n  R3  Destroys or replaces a production resource that holds no data, so the cost\n      is downtime rather than data loss.\n  R4  Destroys or replaces a resource that holds data outside production.\n  R5  A security finding that was already true before this change and is not\n      introduced by it.\n  R6  A production networking change that other resources in the plan depend on.\n\nSAFE. None of the above applies. The change adds no public exposure, grants no\nnew privilege, weakens no encryption, and destroys nothing that matters.\n\nTwo notes that decide most of the hard cases:\n\n  The action matters as much as the configuration. A plan that REMOVES an open\n  SSH rule contains the text 0.0.0.0/0 and is safe. Read what will exist after\n  the change, not what appears in the file.\n\n  A risk that was already there is still a risk, but it is not this deploy's\n  fault. Say so, and let the human decide, rather than blocking a change that\n  did not cause it.\n\nReply with one JSON object and nothing else. No prose before it,\nno prose after it.\n\n{\n  \"verdict\": \"SAFE\" | \"REQUIRES HUMAN REVIEW\" | \"DO NOT APPLY\",\n  \"summary\": \"two or three sentences a tired engineer can act on at 6pm\",\n  \"rules\": [\"D4\"],\n  \"reasons\": [\n    {\n      \"claim\": \"the production database is being replaced, which destroys the data in it\",\n      \"rule\": \"D4\",\n      \"evidence_pointer\": \"resource_changes[0].change.actions\",\n      \"expected_value\": \"[\\\"delete\\\", \\\"create\\\"]\"\n    }\n  ],\n  \"dismissed\": [\n    {\n      \"check_id\": \"SG_ADMIN_PORT_OPEN\",\n      \"resource_address\": \"aws_security_group.bastion\",\n      \"why\": \"the rule is being removed by this change, the after state has no 0.0.0.0/0\"\n    }\n  ],\n  \"confirmations\": [\"the on call owner has a restore path for orders-prod\"]\n}\n\nRules for the fields:\n\n  evidence_pointer must be a real path into the plan JSON you were given, written\n  as resource_changes[2].change.after.publicly_accessible. It is checked against\n  the plan by code after you reply. A pointer that does not resolve is treated as\n  no evidence at all and the claim is thrown away.\n\n  expected_value is what you say sits at that pointer. Quote it exactly.\n\n  dismissed is for risks that were raised and do not apply here. Use it. A tool\n  that only ever adds warnings gets muted within a month.\n\n  confirmations is what the human approving still has to check by hand. Leave it\n  empty for a SAFE plan.",
+      "user_prompt": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_iam_policy.ci_deploy\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_iam_policy\",\n      \"name\": \"ci_deploy\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"change\": {\n        \"actions\": [\n          \"update\"\n        ],\n        \"before\": {\n          \"name\": \"ci-deploy-prod\",\n          \"policy\": \"{\\\"Version\\\":\\\"2012-10-17\\\",\\\"Statement\\\":[{\\\"Sid\\\":\\\"DeployArtifacts\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Action\\\":[\\\"s3:PutObject\\\",\\\"s3:GetObject\\\"],\\\"Resource\\\":\\\"arn:aws:s3:::lgnd-artifacts-prod/*\\\"}]}\",\n          \"tags\": {\n            \"Environment\": \"production\"\n          }\n        },\n        \"after\": {\n          \"name\": \"ci-deploy-prod\",\n          \"policy\": \"{\\\"Version\\\":\\\"2012-10-17\\\",\\\"Statement\\\":[{\\\"Sid\\\":\\\"DeployAnything\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Action\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}]}\",\n          \"tags\": {\n            \"Environment\": \"production\"\n          }\n        }\n      }\n    },\n    {\n      \"address\": \"aws_iam_role_policy_attachment.ci_deploy\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_iam_role_policy_attachment\",\n      \"name\": \"ci_deploy\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"change\": {\n        \"actions\": [\n          \"no-op\"\n        ],\n        \"before\": {\n          \"role\": \"github-actions-prod\",\n          \"policy_arn\": \"arn:aws:iam::111122223333:policy/ci-deploy-prod\"\n        },\n        \"after\": {\n          \"role\": \"github-actions-prod\",\n          \"policy_arn\": \"arn:aws:iam::111122223333:policy/ci-deploy-prod\"\n        }\n      }\n    }\n  ]\n}\n--- END PLAN JSON ---\n\nReview it and return the JSON decision.",
+      "ok": true,
+      "output": {
+        "verdict": "DO NOT APPLY",
+        "summary": "This change grants the CI/CD deployment role complete administrator access to the entire AWS account. The policy is being updated from scoped S3 permissions (get/put on a specific artifacts bucket) to Action:* on Resource:*, which is unbounded privilege across all AWS services and resources in production.",
+        "rules": [
+          "D2"
+        ],
+        "reasons": [
+          {
+            "claim": "the IAM policy is being updated to grant every action on every resource",
+            "evidence_pointer": "resource_changes[0].change.after.policy",
+            "expected_value": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"DeployAnything\",\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}",
+            "rule": "D2",
+            "supported": null,
+            "support_note": ""
+          }
+        ],
+        "dismissed": [],
+        "confirmations": [],
+        "unsupported_reason_count": 0
+      },
+      "input_tokens": 1720,
+      "output_tokens": 236
+    }
+  ],
+  "repairs": 0,
+  "error": null,
+  "final_decision": {
+    "verdict": "DO NOT APPLY",
+    "summary": "This change grants the CI/CD deployment role complete administrator access to the entire AWS account. The policy is being updated from scoped S3 permissions (get/put on a specific artifacts bucket) to Action:* on Resource:*, which is unbounded privilege across all AWS services and resources in production.",
+    "rules": [
+      "D2"
+    ],
+    "reasons": [
+      {
+        "claim": "the IAM policy is being updated to grant every action on every resource",
+        "evidence_pointer": "resource_changes[0].change.after.policy",
+        "expected_value": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"DeployAnything\",\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}",
+        "rule": "D2",
+        "supported": null,
+        "support_note": ""
+      }
+    ],
+    "dismissed": [],
+    "confirmations": [],
+    "unsupported_reason_count": 0
+  },
+  "human_checkpoint": "CloudFix never applies anything. It reads a plan and recommends. Applying the change, or refusing to, is the human's decision and always happens outside this tool.",
+  "score": {
+    "case_id": "c04_iam_wildcard_admin",
+    "difficulty": "easy",
+    "expected_verdict": "DO NOT APPLY",
+    "found_verdict": "DO NOT APPLY",
+    "verdict_correct": true,
+    "direction": "exact",
+    "dangerous_miss": false,
+    "over_block": false,
+    "caught_critical": true,
+    "reasons_total": 1,
+    "reasons_with_pointer": 1,
+    "reasons_unsupported": 0,
+    "dismissed_total": 0,
+    "repairs": 0,
+    "error": null
+  }
+}

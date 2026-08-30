@@ -1,0 +1,143 @@
+{
+  "system": "scanner",
+  "case_id": "c02_public_s3_bucket",
+  "case_title": "Open a confidential export bucket to the public",
+  "model": null,
+  "plan_file": "data/plans/c02_public_s3_bucket.json",
+  "ground_truth": {
+    "expected_verdict": "DO NOT APPLY",
+    "rules": [
+      "D1"
+    ],
+    "why": "All four public access guards go from true to false and the ACL becomes public-read on a bucket tagged DataClassification confidential. That is D1: data reachable from the public internet without authentication. It is not R2, because there is no website configuration and the bucket holds customer exports.",
+    "difficulty": "easy"
+  },
+  "how_to_read": "Steps run in order. kind=tool is deterministic code, kind=model is a call to the language model, kind=skipped is a step this rung deliberately removed. Every model step carries the exact system_prompt and user_prompt it was sent, so the run can be followed from the instructions through to the verdict. A verify step's output.defects is the feedback handed back to the model, and the repair step after it shows what it did with that feedback.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "scan",
+      "kind": "tool",
+      "tool": "checks.run_all",
+      "output": {
+        "finding_count": 2,
+        "findings": [
+          {
+            "check_id": "S3_PUBLIC_ACL",
+            "title": "S3 bucket granted a public access control list",
+            "severity": "critical",
+            "resource_address": "aws_s3_bucket_acl.exports",
+            "resource_type": "aws_s3_bucket_acl",
+            "action": "create",
+            "environment": "production",
+            "detail": "The bucket ACL is set to 'public-read', which makes its objects readable outside the account.",
+            "introduced_by_change": true,
+            "evidence": [
+              {
+                "pointer": "resource_changes[1].change.after.acl",
+                "value": "public-read",
+                "note": "the access control list being applied"
+              }
+            ]
+          },
+          {
+            "check_id": "S3_PUBLIC_ACCESS_UNBLOCKED",
+            "title": "S3 public access protections switched off",
+            "severity": "critical",
+            "resource_address": "aws_s3_bucket_public_access_block.exports",
+            "resource_type": "aws_s3_bucket_public_access_block",
+            "action": "update",
+            "environment": "production",
+            "detail": "4 of the 4 public access guards are false (block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets). These are the safety net that stops a bucket becoming public by accident. This change is what turns them off.",
+            "introduced_by_change": true,
+            "evidence": [
+              {
+                "pointer": "resource_changes[0].change.after.block_public_acls",
+                "value": false,
+                "note": "public access guard"
+              },
+              {
+                "pointer": "resource_changes[0].change.after.block_public_policy",
+                "value": false,
+                "note": "public access guard"
+              },
+              {
+                "pointer": "resource_changes[0].change.after.ignore_public_acls",
+                "value": false,
+                "note": "public access guard"
+              },
+              {
+                "pointer": "resource_changes[0].change.after.restrict_public_buckets",
+                "value": false,
+                "note": "public access guard"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "name": "gate",
+      "kind": "tool",
+      "tool": "scanner.GATE",
+      "input": {
+        "severities": [
+          "critical",
+          "critical"
+        ]
+      },
+      "output": {
+        "verdict": "DO NOT APPLY"
+      }
+    }
+  ],
+  "repairs": 0,
+  "error": null,
+  "final_decision": {
+    "verdict": "DO NOT APPLY",
+    "summary": "2 findings from the security checks. The gate blocks on high or above.",
+    "rules": [
+      "severity gate"
+    ],
+    "reasons": [
+      {
+        "claim": "S3_PUBLIC_ACL on aws_s3_bucket_acl.exports: S3 bucket granted a public access control list",
+        "evidence_pointer": "resource_changes[1].change.after.acl",
+        "expected_value": "public-read",
+        "rule": "severity gate",
+        "supported": null,
+        "support_note": ""
+      },
+      {
+        "claim": "S3_PUBLIC_ACCESS_UNBLOCKED on aws_s3_bucket_public_access_block.exports: S3 public access protections switched off",
+        "evidence_pointer": "resource_changes[0].change.after.block_public_acls",
+        "expected_value": "false",
+        "rule": "severity gate",
+        "supported": null,
+        "support_note": ""
+      }
+    ],
+    "dismissed": [],
+    "confirmations": [],
+    "unsupported_reason_count": 0
+  },
+  "human_checkpoint": "CloudFix never applies anything. It reads a plan and recommends. Applying the change, or refusing to, is the human's decision and always happens outside this tool.",
+  "score": {
+    "case_id": "c02_public_s3_bucket",
+    "difficulty": "easy",
+    "expected_verdict": "DO NOT APPLY",
+    "found_verdict": "DO NOT APPLY",
+    "verdict_correct": true,
+    "direction": "exact",
+    "dangerous_miss": false,
+    "over_block": false,
+    "caught_critical": true,
+    "reasons_total": 2,
+    "reasons_with_pointer": 2,
+    "reasons_unsupported": 0,
+    "dismissed_total": 0,
+    "repairs": 0,
+    "error": null
+  }
+}

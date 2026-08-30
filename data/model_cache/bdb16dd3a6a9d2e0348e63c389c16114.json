@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1501,
+  "output_tokens": 293,
+  "latency_seconds": 5.049,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"DO NOT APPLY\",\n  \"summary\": \"This change replaces the production orders data volume and removes encryption from it. The volume will be deleted and recreated without encryption, destroying existing data and leaving new data unprotected.\",\n  \"rules\": [\"D3\", \"D4\"],\n  \"reasons\": [\n    {\n      \"claim\": \"encryption is being removed from a production data volume that is currently encrypted\",\n      \"rule\": \"D3\",\n      \"evidence_pointer\": \"resource_changes[0].change.after.encrypted\",\n      \"expected_value\": \"false\"\n    },\n    {\n      \"claim\": \"a production resource holding data is being destroyed and replaced\",\n      \"rule\": \"D4\",\n      \"evidence_pointer\": \"resource_changes[0].change.actions\",\n      \"expected_value\": \"[\\\"delete\\\", \\\"create\\\"]\"\n    },\n    {\n      \"claim\": \"the resource is tagged as production environment\",\n      \"rule\": \"D4\",\n      \"evidence_pointer\": \"resource_changes[0].change.before.tags.Environment\",\n      \"expected_value\": \"production\"\n    }\n  ],\n  \"dismissed\": [],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "bdb16dd3a6a9d2e0348e63c389c16114",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_ebs_volume.orders_data\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_ebs_volume\",\n      \"name\": \"orders_data\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"chang"
+}

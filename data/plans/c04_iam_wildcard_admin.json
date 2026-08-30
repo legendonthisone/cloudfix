@@ -1,0 +1,48 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_iam_policy.ci_deploy",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "ci_deploy",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "ci-deploy-prod",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"DeployArtifacts\",\"Effect\":\"Allow\",\"Action\":[\"s3:PutObject\",\"s3:GetObject\"],\"Resource\":\"arn:aws:s3:::lgnd-artifacts-prod/*\"}]}",
+          "tags": {
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "name": "ci-deploy-prod",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"DeployAnything\",\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}",
+          "tags": {
+            "Environment": "production"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_iam_role_policy_attachment.ci_deploy",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "ci_deploy",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["no-op"],
+        "before": {
+          "role": "github-actions-prod",
+          "policy_arn": "arn:aws:iam::111122223333:policy/ci-deploy-prod"
+        },
+        "after": {
+          "role": "github-actions-prod",
+          "policy_arn": "arn:aws:iam::111122223333:policy/ci-deploy-prod"
+        }
+      }
+    }
+  ]
+}

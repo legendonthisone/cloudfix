@@ -1,0 +1,70 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_security_group.jenkins",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "jenkins",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "jenkins-prod-sg",
+          "description": "Jenkins controller",
+          "vpc_id": "vpc-0a91c2f4",
+          "ingress": [
+            {
+              "description": "SSH from anywhere, left over from the 2023 migration",
+              "from_port": 22,
+              "to_port": 22,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"],
+              "ipv6_cidr_blocks": []
+            },
+            {
+              "description": "Web UI from the office VPN",
+              "from_port": 8080,
+              "to_port": 8080,
+              "protocol": "tcp",
+              "cidr_blocks": ["10.4.0.0/16"],
+              "ipv6_cidr_blocks": []
+            }
+          ],
+          "tags": {
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        },
+        "after": {
+          "name": "jenkins-prod-sg",
+          "description": "Jenkins controller",
+          "vpc_id": "vpc-0a91c2f4",
+          "ingress": [
+            {
+              "description": "SSH from the bastion subnet only",
+              "from_port": 22,
+              "to_port": 22,
+              "protocol": "tcp",
+              "cidr_blocks": ["10.4.12.0/24"],
+              "ipv6_cidr_blocks": []
+            },
+            {
+              "description": "Web UI from the office VPN",
+              "from_port": 8080,
+              "to_port": 8080,
+              "protocol": "tcp",
+              "cidr_blocks": ["10.4.0.0/16"],
+              "ipv6_cidr_blocks": []
+            }
+          ],
+          "tags": {
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        }
+      }
+    }
+  ]
+}

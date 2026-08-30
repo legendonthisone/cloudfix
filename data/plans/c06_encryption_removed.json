@@ -1,0 +1,38 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_ebs_volume.orders_data",
+      "mode": "managed",
+      "type": "aws_ebs_volume",
+      "name": "orders_data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "availability_zone": "us-east-1a",
+          "size": 500,
+          "type": "gp3",
+          "encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/9d1a",
+          "tags": {
+            "Name": "orders-data-prod",
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "availability_zone": "us-east-1a",
+          "size": 500,
+          "type": "gp3",
+          "encrypted": false,
+          "kms_key_id": null,
+          "tags": {
+            "Name": "orders-data-prod",
+            "Environment": "production"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.reports",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "reports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["no-op"],
+        "before": {
+          "bucket": "lgnd-reports-prod",
+          "tags": {
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "bucket": "lgnd-reports-prod",
+          "tags": {
+            "Environment": "production"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_iam_role.reports_reader",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "reports_reader",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["no-op"],
+        "before": {
+          "name": "reports-reader-prod"
+        },
+        "after": {
+          "name": "reports-reader-prod"
+        }
+      }
+    }
+  ]
+}

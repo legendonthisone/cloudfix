@@ -1,0 +1,166 @@
+{
+  "policy_version": 1,
+  "note": "Ground truth for the CloudFix evaluation. Every expected_verdict is derived from a numbered rule in docs/VERDICT_POLICY.md, and the rule is named. Disagree with a label by arguing with the rule, not with taste. All plans are synthetic and contain no real account data.",
+  "cases": [
+    {
+      "id": "c01_safe_tagging",
+      "plan": "c01_safe_tagging.json",
+      "title": "Add cost tags and turn on bucket versioning",
+      "expected_verdict": "SAFE",
+      "rules": [],
+      "difficulty": "easy",
+      "critical_resource": null,
+      "why": "Tags are metadata and versioning only adds protection. Nothing is destroyed, nothing is exposed, no permission changes. No rule fires, so the verdict is SAFE."
+    },
+    {
+      "id": "c02_public_s3_bucket",
+      "plan": "c02_public_s3_bucket.json",
+      "title": "Open a confidential export bucket to the public",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D1"],
+      "difficulty": "easy",
+      "critical_resource": "aws_s3_bucket_acl.exports",
+      "why": "All four public access guards go from true to false and the ACL becomes public-read on a bucket tagged DataClassification confidential. That is D1: data reachable from the public internet without authentication. It is not R2, because there is no website configuration and the bucket holds customer exports."
+    },
+    {
+      "id": "c03_open_ssh_sg",
+      "plan": "c03_open_ssh_sg.json",
+      "title": "New bastion with SSH open to the world",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D1"],
+      "difficulty": "easy",
+      "critical_resource": "aws_security_group.bastion",
+      "why": "The security group is created with port 22 open to 0.0.0.0/0. D1 covers a remote administration port reachable from every address on the internet. The good intention in the description does not change what the rule does."
+    },
+    {
+      "id": "c04_iam_wildcard_admin",
+      "plan": "c04_iam_wildcard_admin.json",
+      "title": "CI deploy policy widened to full account admin",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D2"],
+      "difficulty": "easy",
+      "critical_resource": "aws_iam_policy.ci_deploy",
+      "why": "The policy goes from two scoped S3 actions to Action * on Resource *. That is D2, unbounded privilege, and it is granted to a CI role that anyone who can merge a pull request can reach."
+    },
+    {
+      "id": "c05_public_database",
+      "plan": "c05_public_database.json",
+      "title": "Production database given a public endpoint",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D1"],
+      "difficulty": "easy",
+      "critical_resource": "aws_db_instance.analytics",
+      "why": "publicly_accessible goes false to true on a production database, and a matching rule opens 5432 to 0.0.0.0/0. Either one alone is D1. Together they are a database open to the internet."
+    },
+    {
+      "id": "c06_encryption_removed",
+      "plan": "c06_encryption_removed.json",
+      "title": "Production volume rebuilt without encryption",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D3", "D4"],
+      "difficulty": "medium",
+      "critical_resource": "aws_ebs_volume.orders_data",
+      "why": "encrypted goes true to false and the KMS key is dropped, which is D3. The volume is also replaced, and a volume holds data, so D4 fires as well. Either rule alone blocks it."
+    },
+    {
+      "id": "c07_prod_db_replace_clean",
+      "plan": "c07_prod_db_replace_clean.json",
+      "title": "Major version upgrade that replaces the production database with no final snapshot",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D4"],
+      "difficulty": "hard",
+      "critical_resource": "aws_db_instance.orders",
+      "why": "Security configuration is perfect here: encrypted, private, backups on. Every security check passes. What the plan actually does is replace orders-prod, turn deletion_protection off and set skip_final_snapshot to true, which destroys the production data with nothing to restore from. That is D4. This case exists because it is the one a security scanner cannot see."
+    },
+    {
+      "id": "c08_nat_gateway_replace",
+      "plan": "c08_nat_gateway_replace.json",
+      "title": "Production NAT gateway moved to another subnet",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R3", "R6"],
+      "difficulty": "medium",
+      "critical_resource": "aws_nat_gateway.egress",
+      "why": "The NAT gateway is replaced, so outbound traffic from the private subnets breaks while the new one comes up. No data is lost, which keeps it out of D4, and two routes depend on it. R3 and R6, so a human decides the window."
+    },
+    {
+      "id": "c09_prod_ec2_replace",
+      "plan": "c09_prod_ec2_replace.json",
+      "title": "Production API instance replaced by an AMI change",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R3"],
+      "difficulty": "medium",
+      "critical_resource": "aws_instance.api",
+      "why": "A new AMI forces the instance to be destroyed and rebuilt. The root volume stays encrypted and nothing is exposed, so no D rule fires. It is a production resource going down and coming back, which is R3."
+    },
+    {
+      "id": "c10_k8s_privileged",
+      "plan": "c10_k8s_privileged.json",
+      "title": "Log shipper deployed with host privilege in the production namespace",
+      "expected_verdict": "DO NOT APPLY",
+      "rules": ["D5"],
+      "difficulty": "medium",
+      "critical_resource": "kubernetes_deployment.log_shipper",
+      "why": "privileged, host_pid, host_network and allow_privilege_escalation are all true in the production namespace. D5. One compromised image becomes a compromised node, and the node runs everything else."
+    },
+    {
+      "id": "c11_closing_ssh_rule",
+      "plan": "c11_closing_ssh_rule.json",
+      "title": "Security group change that closes SSH to the world",
+      "expected_verdict": "SAFE",
+      "rules": [],
+      "difficulty": "hard",
+      "critical_resource": null,
+      "why": "The plan text contains 0.0.0.0/0 on port 22, which is exactly what a text scan looks for. Read the after state and the rule is gone, replaced by a single bastion subnet. This change removes risk. Blocking it would be worse than useless, it would train the team to bypass the tool."
+    },
+    {
+      "id": "c12_dev_static_website",
+      "plan": "c12_dev_static_website.json",
+      "title": "Public static marketing site bucket in development",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R2"],
+      "difficulty": "hard",
+      "critical_resource": "aws_s3_bucket.marketing_site",
+      "why": "Public read on a bucket is normally D1, but this bucket carries a website configuration, is tagged development and public, and the policy grants only s3:GetObject. That is the documented shape of an intentional static website, which R2 sends to a human rather than blocking. The exception in D1 names this case."
+    },
+    {
+      "id": "c13_scoped_service_wildcard",
+      "plan": "c13_scoped_service_wildcard.json",
+      "title": "Worker role granted every S3 action on one named bucket",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R1"],
+      "difficulty": "hard",
+      "critical_resource": "aws_iam_role_policy.uploads_worker",
+      "why": "Action is s3:*, which includes deleting the bucket and rewriting its policy, so it is genuinely broad. Resource is two named ARNs, so it is bounded and cannot touch anything else in the account. Broad but bounded is R1, not D2."
+    },
+    {
+      "id": "c14_mixed_prod_change",
+      "plan": "c14_mixed_prod_change.json",
+      "title": "Four resource change: load balancer replaced, public HTTPS group, dev cache bucket",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R3"],
+      "difficulty": "medium",
+      "critical_resource": "aws_lb.public_api",
+      "why": "Ports 80 and 443 open to the world on a public load balancer is the normal shape of a public API and is not a finding. The private dev bucket and the log retention change are routine. What needs a human is the production load balancer being replaced, which drops traffic while it rebuilds. R3."
+    },
+    {
+      "id": "c15_preexisting_open_port",
+      "plan": "c15_preexisting_open_port.json",
+      "title": "Tag change on a host that already had SSH open to the world",
+      "expected_verdict": "REQUIRES HUMAN REVIEW",
+      "rules": ["R5"],
+      "difficulty": "hard",
+      "critical_resource": "aws_security_group.legacy_ftp",
+      "why": "The open SSH rule is identical in before and after. It is a real problem and it must be raised, but this change did not cause it and blocking a tag edit does not close the port. R5 puts it in front of a human without blocking an unrelated deploy."
+    },
+    {
+      "id": "c16_noop_only",
+      "plan": "c16_noop_only.json",
+      "title": "Plan with nothing to do",
+      "expected_verdict": "SAFE",
+      "rules": [],
+      "difficulty": "easy",
+      "critical_resource": null,
+      "why": "Every resource is a no-op. Terraform will change nothing. A reviewer that finds risk in a plan that does nothing is inventing it."
+    }
+  ]
+}

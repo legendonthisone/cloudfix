@@ -1,0 +1,54 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_security_group.legacy_ftp",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "legacy_ftp",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "legacy-ftp-prod-sg",
+          "description": "Legacy file transfer host",
+          "vpc_id": "vpc-0a91c2f4",
+          "ingress": [
+            {
+              "description": "SSH, open since before this repository existed",
+              "from_port": 22,
+              "to_port": 22,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"],
+              "ipv6_cidr_blocks": []
+            }
+          ],
+          "tags": {
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "name": "legacy-ftp-prod-sg",
+          "description": "Legacy file transfer host",
+          "vpc_id": "vpc-0a91c2f4",
+          "ingress": [
+            {
+              "description": "SSH, open since before this repository existed",
+              "from_port": 22,
+              "to_port": 22,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"],
+              "ipv6_cidr_blocks": []
+            }
+          ],
+          "tags": {
+            "Environment": "production",
+            "Owner": "platform",
+            "CostCentre": "eng-1042"
+          }
+        }
+      }
+    }
+  ]
+}

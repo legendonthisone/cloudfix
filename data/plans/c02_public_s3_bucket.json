@@ -1,0 +1,49 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket_public_access_block.exports",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "exports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "bucket": "lgnd-customer-exports-prod",
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "ignore_public_acls": true,
+          "restrict_public_buckets": true
+        },
+        "after": {
+          "bucket": "lgnd-customer-exports-prod",
+          "block_public_acls": false,
+          "block_public_policy": false,
+          "ignore_public_acls": false,
+          "restrict_public_buckets": false
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_acl.exports",
+      "mode": "managed",
+      "type": "aws_s3_bucket_acl",
+      "name": "exports",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-customer-exports-prod",
+          "acl": "public-read",
+          "tags": {
+            "Environment": "production",
+            "DataClassification": "confidential"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.analytics",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "analytics",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "identifier": "analytics-prod",
+          "engine": "postgres",
+          "instance_class": "db.t3.medium",
+          "publicly_accessible": false,
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/9d1a",
+          "deletion_protection": true,
+          "skip_final_snapshot": false,
+          "tags": {
+            "Environment": "production",
+            "Owner": "data"
+          }
+        },
+        "after": {
+          "identifier": "analytics-prod",
+          "engine": "postgres",
+          "instance_class": "db.t3.medium",
+          "publicly_accessible": true,
+          "storage_encrypted": true,
+          "kms_key_id": "arn:aws:kms:us-east-1:111122223333:key/9d1a",
+          "deletion_protection": true,
+          "skip_final_snapshot": false,
+          "tags": {
+            "Environment": "production",
+            "Owner": "data"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_security_group_rule.analytics_from_office",
+      "mode": "managed",
+      "type": "aws_security_group_rule",
+      "name": "analytics_from_office",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "type": "ingress",
+          "description": "BI tool access",
+          "from_port": 5432,
+          "to_port": 5432,
+          "protocol": "tcp",
+          "cidr_blocks": ["0.0.0.0/0"],
+          "security_group_id": "sg-04b8f1c9"
+        }
+      }
+    }
+  ]
+}

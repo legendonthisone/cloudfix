@@ -1,0 +1,135 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_lb.public_api",
+      "mode": "managed",
+      "type": "aws_lb",
+      "name": "public_api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "name": "api-prod-alb",
+          "internal": false,
+          "load_balancer_type": "application",
+          "subnets": ["subnet-0a1b2c3d", "subnet-1a2b3c4d"],
+          "tags": {
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        },
+        "after": {
+          "name": "api-prod-alb",
+          "internal": false,
+          "load_balancer_type": "application",
+          "subnets": ["subnet-0a1b2c3d", "subnet-1a2b3c4d", "subnet-2a3b4c5d"],
+          "tags": {
+            "Environment": "production",
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_security_group.public_api",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "public_api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "api-prod-alb-sg",
+          "description": "Public HTTPS for the customer API",
+          "vpc_id": "vpc-0a91c2f4",
+          "ingress": [
+            {
+              "description": "HTTPS from the internet",
+              "from_port": 443,
+              "to_port": 443,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"],
+              "ipv6_cidr_blocks": ["::/0"]
+            },
+            {
+              "description": "HTTP redirect to HTTPS",
+              "from_port": 80,
+              "to_port": 80,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"],
+              "ipv6_cidr_blocks": []
+            }
+          ],
+          "tags": {
+            "Environment": "production"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.build_cache",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "build_cache",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-build-cache-dev",
+          "force_destroy": true,
+          "tags": {
+            "Environment": "development"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_cloudwatch_log_group.api",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "/aws/ecs/api-prod",
+          "retention_in_days": 30
+        },
+        "after": {
+          "name": "/aws/ecs/api-prod",
+          "retention_in_days": 90
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_lb_listener.https",
+          "type": "aws_lb_listener",
+          "name": "https",
+          "expressions": {
+            "load_balancer_arn": {
+              "references": ["aws_lb.public_api.arn", "aws_lb.public_api"]
+            }
+          }
+        },
+        {
+          "address": "aws_lb_listener.http_redirect",
+          "type": "aws_lb_listener",
+          "name": "http_redirect",
+          "expressions": {
+            "load_balancer_arn": {
+              "references": ["aws_lb.public_api.arn", "aws_lb.public_api"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

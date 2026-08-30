@@ -1,0 +1,323 @@
+{
+  "samples": 3,
+  "reports": [
+    {
+      "system": "baseline",
+      "samples": 3,
+      "cases": 16,
+      "verdict_accuracy_by_sample": [
+        0.875,
+        0.875,
+        0.875
+      ],
+      "verdict_accuracy_mean": 0.875,
+      "verdict_stability": 1.0,
+      "cases_that_moved": [],
+      "per_case": [
+        {
+          "case_id": "c01_safe_tagging",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c02_public_s3_bucket",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c03_open_ssh_sg",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c04_iam_wildcard_admin",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c05_public_database",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c06_encryption_removed",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c07_prod_db_replace_clean",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c08_nat_gateway_replace",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c09_prod_ec2_replace",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c10_k8s_privileged",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c11_closing_ssh_rule",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c12_dev_static_website",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c13_scoped_service_wildcard",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c14_mixed_prod_change",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c15_preexisting_open_port",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c16_noop_only",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        }
+      ]
+    },
+    {
+      "system": "agent",
+      "samples": 3,
+      "cases": 16,
+      "verdict_accuracy_by_sample": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "verdict_accuracy_mean": 1.0,
+      "verdict_stability": 1.0,
+      "cases_that_moved": [],
+      "per_case": [
+        {
+          "case_id": "c01_safe_tagging",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c02_public_s3_bucket",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c03_open_ssh_sg",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c04_iam_wildcard_admin",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c05_public_database",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c06_encryption_removed",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c07_prod_db_replace_clean",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c08_nat_gateway_replace",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c09_prod_ec2_replace",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c10_k8s_privileged",
+          "verdicts": [
+            "DO NOT APPLY",
+            "DO NOT APPLY",
+            "DO NOT APPLY"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c11_closing_ssh_rule",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c12_dev_static_website",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c13_scoped_service_wildcard",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c14_mixed_prod_change",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c15_preexisting_open_port",
+          "verdicts": [
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW",
+            "REQUIRES HUMAN REVIEW"
+          ],
+          "distinct": 1
+        },
+        {
+          "case_id": "c16_noop_only",
+          "verdicts": [
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "distinct": 1
+        }
+      ]
+    }
+  ]
+}

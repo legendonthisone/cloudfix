@@ -1,0 +1,138 @@
+{
+  "system": "scanner",
+  "case_id": "c05_public_database",
+  "case_title": "Production database given a public endpoint",
+  "model": null,
+  "plan_file": "data/plans/c05_public_database.json",
+  "ground_truth": {
+    "expected_verdict": "DO NOT APPLY",
+    "rules": [
+      "D1"
+    ],
+    "why": "publicly_accessible goes false to true on a production database, and a matching rule opens 5432 to 0.0.0.0/0. Either one alone is D1. Together they are a database open to the internet.",
+    "difficulty": "easy"
+  },
+  "how_to_read": "Steps run in order. kind=tool is deterministic code, kind=model is a call to the language model, kind=skipped is a step this rung deliberately removed. Every model step carries the exact system_prompt and user_prompt it was sent, so the run can be followed from the instructions through to the verdict. A verify step's output.defects is the feedback handed back to the model, and the repair step after it shows what it did with that feedback.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "scan",
+      "kind": "tool",
+      "tool": "checks.run_all",
+      "output": {
+        "finding_count": 2,
+        "findings": [
+          {
+            "check_id": "DB_PUBLICLY_ACCESSIBLE",
+            "title": "Database given a public endpoint",
+            "severity": "critical",
+            "resource_address": "aws_db_instance.analytics",
+            "resource_type": "aws_db_instance",
+            "action": "update",
+            "environment": "production",
+            "detail": "publicly_accessible is true, so this database gets an address that resolves from the public internet. It was private before this change.",
+            "introduced_by_change": true,
+            "evidence": [
+              {
+                "pointer": "resource_changes[0].change.after.publicly_accessible",
+                "value": true,
+                "note": "public endpoint flag after the change"
+              }
+            ]
+          },
+          {
+            "check_id": "SG_DATABASE_PORT_OPEN",
+            "title": "Database port open to the whole internet",
+            "severity": "critical",
+            "resource_address": "aws_security_group_rule.analytics_from_office",
+            "resource_type": "aws_security_group_rule",
+            "action": "create",
+            "environment": "unknown",
+            "detail": "Ports 5432 to 5432 are open to 0.0.0.0/0, which covers PostgreSQL (5432). A database port reachable from the internet is a direct path to the data.",
+            "introduced_by_change": true,
+            "evidence": [
+              {
+                "pointer": "resource_changes[1].change.after",
+                "value": {
+                  "type": "ingress",
+                  "description": "BI tool access",
+                  "from_port": 5432,
+                  "to_port": 5432,
+                  "protocol": "tcp",
+                  "cidr_blocks": [
+                    "0.0.0.0/0"
+                  ],
+                  "security_group_id": "sg-04b8f1c9"
+                },
+                "note": "the inbound rule as it will exist"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "name": "gate",
+      "kind": "tool",
+      "tool": "scanner.GATE",
+      "input": {
+        "severities": [
+          "critical",
+          "critical"
+        ]
+      },
+      "output": {
+        "verdict": "DO NOT APPLY"
+      }
+    }
+  ],
+  "repairs": 0,
+  "error": null,
+  "final_decision": {
+    "verdict": "DO NOT APPLY",
+    "summary": "2 findings from the security checks. The gate blocks on high or above.",
+    "rules": [
+      "severity gate"
+    ],
+    "reasons": [
+      {
+        "claim": "DB_PUBLICLY_ACCESSIBLE on aws_db_instance.analytics: Database given a public endpoint",
+        "evidence_pointer": "resource_changes[0].change.after.publicly_accessible",
+        "expected_value": "true",
+        "rule": "severity gate",
+        "supported": null,
+        "support_note": ""
+      },
+      {
+        "claim": "SG_DATABASE_PORT_OPEN on aws_security_group_rule.analytics_from_office: Database port open to the whole internet",
+        "evidence_pointer": "resource_changes[1].change.after",
+        "expected_value": "",
+        "rule": "severity gate",
+        "supported": null,
+        "support_note": ""
+      }
+    ],
+    "dismissed": [],
+    "confirmations": [],
+    "unsupported_reason_count": 0
+  },
+  "human_checkpoint": "CloudFix never applies anything. It reads a plan and recommends. Applying the change, or refusing to, is the human's decision and always happens outside this tool.",
+  "score": {
+    "case_id": "c05_public_database",
+    "difficulty": "easy",
+    "expected_verdict": "DO NOT APPLY",
+    "found_verdict": "DO NOT APPLY",
+    "verdict_correct": true,
+    "direction": "exact",
+    "dangerous_miss": false,
+    "over_block": false,
+    "caught_critical": true,
+    "reasons_total": 2,
+    "reasons_with_pointer": 2,
+    "reasons_unsupported": 0,
+    "dismissed_total": 0,
+    "repairs": 0,
+    "error": null
+  }
+}

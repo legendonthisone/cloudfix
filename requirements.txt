@@ -1,0 +1,13 @@
+# The Terraform plan reader, the deterministic security checks, the blast radius
+# analysis, the verifier, the scanner rung and all 155 unit tests need nothing
+# but the Python standard library. Only the agent's model call needs a client.
+#
+# Pinned to the exact version this project was built and evaluated with.
+anthropic==1.2.0
+
+# The recorded run used AWS Bedrock, which needs the extra dependency below.
+# Install it only if you want to re-record the run against your own AWS account.
+# Reproducing the published numbers does not need it, because
+# `--mode replay` uses the responses committed to data/model_cache.
+#
+#   pip install "anthropic[bedrock]==1.2.0"

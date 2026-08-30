@@ -1,0 +1,22 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_iam_role_policy.uploads_worker",
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "uploads_worker",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "uploads-worker-prod",
+          "role": "uploads-worker-prod",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"UploadsBucketFullControl\",\"Effect\":\"Allow\",\"Action\":\"s3:*\",\"Resource\":[\"arn:aws:s3:::lgnd-uploads-prod\",\"arn:aws:s3:::lgnd-uploads-prod/*\"]}]}"
+        }
+      }
+    }
+  ]
+}

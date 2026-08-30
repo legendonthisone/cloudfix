@@ -1,0 +1,110 @@
+{
+  "system": "scanner",
+  "case_id": "c15_preexisting_open_port",
+  "case_title": "Tag change on a host that already had SSH open to the world",
+  "model": null,
+  "plan_file": "data/plans/c15_preexisting_open_port.json",
+  "ground_truth": {
+    "expected_verdict": "REQUIRES HUMAN REVIEW",
+    "rules": [
+      "R5"
+    ],
+    "why": "The open SSH rule is identical in before and after. It is a real problem and it must be raised, but this change did not cause it and blocking a tag edit does not close the port. R5 puts it in front of a human without blocking an unrelated deploy.",
+    "difficulty": "hard"
+  },
+  "how_to_read": "Steps run in order. kind=tool is deterministic code, kind=model is a call to the language model, kind=skipped is a step this rung deliberately removed. Every model step carries the exact system_prompt and user_prompt it was sent, so the run can be followed from the instructions through to the verdict. A verify step's output.defects is the feedback handed back to the model, and the repair step after it shows what it did with that feedback.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "scan",
+      "kind": "tool",
+      "tool": "checks.run_all",
+      "output": {
+        "finding_count": 1,
+        "findings": [
+          {
+            "check_id": "SG_ADMIN_PORT_OPEN",
+            "title": "Remote administration port open to the whole internet",
+            "severity": "high",
+            "resource_address": "aws_security_group.legacy_ftp",
+            "resource_type": "aws_security_group",
+            "action": "update",
+            "environment": "production",
+            "detail": "Ports 22 to 22 are open to 0.0.0.0/0, which covers SSH (22). Remote login should never be reachable from every address on the internet. This exposure was already present before the change, so it is not introduced by this deploy. Reported one severity lower for that reason.",
+            "introduced_by_change": false,
+            "evidence": [
+              {
+                "pointer": "resource_changes[0].change.after.ingress[0]",
+                "value": {
+                  "description": "SSH, open since before this repository existed",
+                  "from_port": 22,
+                  "to_port": 22,
+                  "protocol": "tcp",
+                  "cidr_blocks": [
+                    "0.0.0.0/0"
+                  ],
+                  "ipv6_cidr_blocks": []
+                },
+                "note": "the inbound rule as it will exist"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "name": "gate",
+      "kind": "tool",
+      "tool": "scanner.GATE",
+      "input": {
+        "severities": [
+          "high"
+        ]
+      },
+      "output": {
+        "verdict": "DO NOT APPLY"
+      }
+    }
+  ],
+  "repairs": 0,
+  "error": null,
+  "final_decision": {
+    "verdict": "DO NOT APPLY",
+    "summary": "1 finding from the security checks. The gate blocks on high or above.",
+    "rules": [
+      "severity gate"
+    ],
+    "reasons": [
+      {
+        "claim": "SG_ADMIN_PORT_OPEN on aws_security_group.legacy_ftp: Remote administration port open to the whole internet",
+        "evidence_pointer": "resource_changes[0].change.after.ingress[0]",
+        "expected_value": "",
+        "rule": "severity gate",
+        "supported": null,
+        "support_note": ""
+      }
+    ],
+    "dismissed": [],
+    "confirmations": [],
+    "unsupported_reason_count": 0
+  },
+  "human_checkpoint": "CloudFix never applies anything. It reads a plan and recommends. Applying the change, or refusing to, is the human's decision and always happens outside this tool.",
+  "score": {
+    "case_id": "c15_preexisting_open_port",
+    "difficulty": "hard",
+    "expected_verdict": "REQUIRES HUMAN REVIEW",
+    "found_verdict": "DO NOT APPLY",
+    "verdict_correct": false,
+    "direction": "over",
+    "dangerous_miss": false,
+    "over_block": true,
+    "caught_critical": true,
+    "reasons_total": 1,
+    "reasons_with_pointer": 1,
+    "reasons_unsupported": 0,
+    "dismissed_total": 0,
+    "repairs": 0,
+    "error": null
+  }
+}

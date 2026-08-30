@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 2119,
+  "output_tokens": 210,
+  "latency_seconds": 4.794,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"SAFE\",\n  \"summary\": \"This change only adds cost tracking tags to a security group. The SSH exposure to 0.0.0.0/0 was already present before this change and is not introduced by it. No resources are being created, destroyed, or having their security posture weakened.\",\n  \"rules\": [],\n  \"reasons\": [],\n  \"dismissed\": [\n    {\n      \"check_id\": \"SG_ADMIN_PORT_OPEN\",\n      \"resource_address\": \"aws_security_group.legacy_ftp\",\n      \"why\": \"the SSH rule open to 0.0.0.0/0 existed before this change and remains unchanged. This deploy only adds tags (Owner, CostCentre) and does not modify the ingress rules at all.\"\n    }\n  ],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "89870f62854e757f3de13fed25d86067",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_security_group.legacy_ftp\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_security_group\",\n      \"name\": \"legacy_ftp\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      "
+}

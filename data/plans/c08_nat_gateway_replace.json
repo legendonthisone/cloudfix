@@ -1,0 +1,78 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_nat_gateway.egress",
+      "mode": "managed",
+      "type": "aws_nat_gateway",
+      "name": "egress",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "subnet_id": "subnet-0a1b2c3d",
+          "allocation_id": "eipalloc-0f1e2d3c",
+          "connectivity_type": "public",
+          "tags": {
+            "Name": "egress-prod",
+            "Environment": "production"
+          }
+        },
+        "after": {
+          "subnet_id": "subnet-9z8y7x6w",
+          "allocation_id": "eipalloc-0f1e2d3c",
+          "connectivity_type": "public",
+          "tags": {
+            "Name": "egress-prod",
+            "Environment": "production"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_route.private_default",
+      "mode": "managed",
+      "type": "aws_route",
+      "name": "private_default",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "route_table_id": "rtb-01234567",
+          "destination_cidr_block": "0.0.0.0/0"
+        },
+        "after": {
+          "route_table_id": "rtb-01234567",
+          "destination_cidr_block": "0.0.0.0/0"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_route.private_default",
+          "type": "aws_route",
+          "name": "private_default",
+          "expressions": {
+            "nat_gateway_id": {
+              "references": ["aws_nat_gateway.egress.id", "aws_nat_gateway.egress"]
+            }
+          }
+        },
+        {
+          "address": "aws_route.private_default_b",
+          "type": "aws_route",
+          "name": "private_default_b",
+          "expressions": {
+            "nat_gateway_id": {
+              "references": ["aws_nat_gateway.egress.id", "aws_nat_gateway.egress"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

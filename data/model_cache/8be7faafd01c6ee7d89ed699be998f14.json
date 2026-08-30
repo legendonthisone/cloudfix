@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1823,
+  "output_tokens": 117,
+  "latency_seconds": 3.565,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"SAFE\",\n  \"summary\": \"This change adds resource tags to an existing production S3 bucket and enables versioning on it. Both actions strengthen the deployment: tags improve cost tracking and data classification visibility, while versioning protects against accidental deletion or overwrites. No resources are destroyed, no new access is granted, and no encryption is weakened.\",\n  \"rules\": [],\n  \"reasons\": [],\n  \"dismissed\": [],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "8be7faafd01c6ee7d89ed699be998f14",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_s3_bucket.reports\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_s3_bucket\",\n      \"name\": \"reports\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"change\": {\n    "
+}

@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1783,
+  "output_tokens": 338,
+  "latency_seconds": 5.573,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"DO NOT APPLY\",\n  \"summary\": \"This change exposes a production PostgreSQL database to the public internet without authentication. The database is being made publicly accessible and a security group rule is opening port 5432 to 0.0.0.0/0, allowing anyone on the internet to attempt connections.\",\n  \"rules\": [\"D1\"],\n  \"reasons\": [\n    {\n      \"claim\": \"the production database publicly_accessible flag is being changed from false to true\",\n      \"rule\": \"D1\",\n      \"evidence_pointer\": \"resource_changes[0].change.after.publicly_accessible\",\n      \"expected_value\": \"true\"\n    },\n    {\n      \"claim\": \"a security group rule is being created that opens the PostgreSQL port 5432 to 0.0.0.0/0\",\n      \"rule\": \"D1\",\n      \"evidence_pointer\": \"resource_changes[1].change.after.cidr_blocks\",\n      \"expected_value\": \"[\\\"0.0.0.0/0\\\"]\"\n    },\n    {\n      \"claim\": \"the resource is tagged as production environment\",\n      \"rule\": \"D1\",\n      \"evidence_pointer\": \"resource_changes[0].change.after.tags.Environment\",\n      \"expected_value\": \"production\"\n    }\n  ],\n  \"dismissed\": [],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "63ae88c242cad7d81d09ce3c4e5ed9f0",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_db_instance.analytics\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_db_instance\",\n      \"name\": \"analytics\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"change\""
+}

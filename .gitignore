@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.env
+.env.*
+*.egg-info/
+.DS_Store
+tfplan
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# results/ and trajectories/ are NOT ignored. They are the submitted evidence:
+# every verdict, every per case score, every step the agent took.
+#
+# data/model_cache/ is not ignored either. Those recordings are what let a judge
+# reproduce the headline number with no AWS account, no API key and no internet.

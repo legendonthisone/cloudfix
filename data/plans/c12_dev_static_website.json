@@ -1,0 +1,83 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.marketing_site",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "marketing_site",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-marketing-site-dev",
+          "force_destroy": true,
+          "tags": {
+            "Environment": "development",
+            "Purpose": "public static marketing site",
+            "DataClassification": "public"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_website_configuration.marketing_site",
+      "mode": "managed",
+      "type": "aws_s3_bucket_website_configuration",
+      "name": "marketing_site",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-marketing-site-dev",
+          "index_document": [
+            {
+              "suffix": "index.html"
+            }
+          ],
+          "error_document": [
+            {
+              "key": "404.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.marketing_site",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "marketing_site",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-marketing-site-dev",
+          "block_public_acls": false,
+          "block_public_policy": false,
+          "ignore_public_acls": false,
+          "restrict_public_buckets": false
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_policy.marketing_site",
+      "mode": "managed",
+      "type": "aws_s3_bucket_policy",
+      "name": "marketing_site",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "lgnd-marketing-site-dev",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"PublicReadForWebsite\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::lgnd-marketing-site-dev/*\"}]}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1805,
+  "output_tokens": 194,
+  "latency_seconds": 4.943,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"SAFE\",\n  \"summary\": \"This change removes public SSH access from the Jenkins production security group, restricting it to a private bastion subnet (10.4.12.0/24). The change improves security by closing an administrative port that was previously open to the internet.\",\n  \"rules\": [],\n  \"reasons\": [],\n  \"dismissed\": [\n    {\n      \"check_id\": \"SG_ADMIN_PORT_OPEN\",\n      \"resource_address\": \"aws_security_group.jenkins\",\n      \"why\": \"the SSH rule allowing 0.0.0.0/0 is being removed by this change; the after state restricts SSH to 10.4.12.0/24 only\"\n    }\n  ],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "bc2cd5e0dd09d7bcb38f0298887d4ffd",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_security_group.jenkins\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_security_group\",\n      \"name\": \"jenkins\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"chang"
+}

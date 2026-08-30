@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1963,
+  "output_tokens": 266,
+  "latency_seconds": 6.185,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"SAFE\",\n  \"summary\": \"This plan creates a new S3 bucket configured as a public static website in the development environment. The bucket is properly tagged as containing public data and is intentionally configured for public read access to serve web content. This is a standard static website hosting setup.\",\n  \"rules\": [],\n  \"reasons\": [],\n  \"dismissed\": [\n    {\n      \"check_id\": \"S3_PUBLIC_ACCESS\",\n      \"resource_address\": \"aws_s3_bucket_public_access_block.marketing_site\",\n      \"why\": \"public access is intentional for a static website bucket, evidenced by website_configuration, DataClassification tag of 'public', and development environment\"\n    },\n    {\n      \"check_id\": \"S3_PUBLIC_POLICY\",\n      \"resource_address\": \"aws_s3_bucket_policy.marketing_site\",\n      \"why\": \"the bucket policy allows public GetObject only, which is required for static website hosting, and the bucket is tagged as public data in development\"\n    }\n  ],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "b6308dbe5d02ead76724d0697d3530a9",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_s3_bucket.marketing_site\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_s3_bucket\",\n      \"name\": \"marketing_site\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"c"
+}

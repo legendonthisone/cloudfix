@@ -1,0 +1,11 @@
+{
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "input_tokens": 1963,
+  "output_tokens": 253,
+  "latency_seconds": 5.036,
+  "from_cache": false,
+  "text": "```json\n{\n  \"verdict\": \"SAFE\",\n  \"summary\": \"Creating a public S3 bucket configured as a static website in development. The bucket is explicitly tagged as containing public data for a marketing site, has website configuration enabled, and grants public read access intentionally. This is a standard pattern for hosting static websites on S3.\",\n  \"rules\": [],\n  \"reasons\": [],\n  \"dismissed\": [\n    {\n      \"check_id\": \"S3_PUBLIC_ACCESS\",\n      \"resource_address\": \"aws_s3_bucket_public_access_block.marketing_site\",\n      \"why\": \"bucket is intentionally configured as a public static website with website_configuration, tagged as public data, and in development environment\"\n    },\n    {\n      \"check_id\": \"S3_PUBLIC_POLICY\",\n      \"resource_address\": \"aws_s3_bucket_policy.marketing_site\",\n      \"why\": \"public GetObject access is intended for static website hosting, matches the declared purpose in tags\"\n    }\n  ],\n  \"confirmations\": []\n}\n```",
+  "prompt_sha256": "3fc7f59d9bf5694dde717a897be9997f",
+  "system_preview": "You are CloudFix, a reviewer that reads a Terraform plan before it is\napplied and decides whether it is safe to deploy.\n\nA Terraform plan is the preview of what a change will do: which resources get\ncreated, updated, replaced or destroyed. You are reading that preview, not the\nsource files, so the action matters as much as the configuration.\n\nYou never apply anything. You recommend, and a human de",
+  "user_preview": "Here is the Terraform plan in JSON, exactly as `terraform show -json`\nproduced it.\n\n--- PLAN JSON ---\n{\n  \"format_version\": \"1.2\",\n  \"terraform_version\": \"1.9.5\",\n  \"resource_changes\": [\n    {\n      \"address\": \"aws_s3_bucket.marketing_site\",\n      \"mode\": \"managed\",\n      \"type\": \"aws_s3_bucket\",\n      \"name\": \"marketing_site\",\n      \"provider_name\": \"registry.terraform.io/hashicorp/aws\",\n      \"c"
+}

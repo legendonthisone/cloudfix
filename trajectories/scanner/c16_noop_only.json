@@ -1,0 +1,69 @@
+{
+  "system": "scanner",
+  "case_id": "c16_noop_only",
+  "case_title": "Plan with nothing to do",
+  "model": null,
+  "plan_file": "data/plans/c16_noop_only.json",
+  "ground_truth": {
+    "expected_verdict": "SAFE",
+    "rules": [],
+    "why": "Every resource is a no-op. Terraform will change nothing. A reviewer that finds risk in a plan that does nothing is inventing it.",
+    "difficulty": "easy"
+  },
+  "how_to_read": "Steps run in order. kind=tool is deterministic code, kind=model is a call to the language model, kind=skipped is a step this rung deliberately removed. Every model step carries the exact system_prompt and user_prompt it was sent, so the run can be followed from the instructions through to the verdict. A verify step's output.defects is the feedback handed back to the model, and the repair step after it shows what it did with that feedback.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "scan",
+      "kind": "tool",
+      "tool": "checks.run_all",
+      "output": {
+        "finding_count": 0,
+        "findings": []
+      }
+    },
+    {
+      "step": 2,
+      "name": "gate",
+      "kind": "tool",
+      "tool": "scanner.GATE",
+      "input": {
+        "severities": []
+      },
+      "output": {
+        "verdict": "SAFE"
+      }
+    }
+  ],
+  "repairs": 0,
+  "error": null,
+  "final_decision": {
+    "verdict": "SAFE",
+    "summary": "No security findings, so the gate passes the plan.",
+    "rules": [
+      "severity gate"
+    ],
+    "reasons": [],
+    "dismissed": [],
+    "confirmations": [],
+    "unsupported_reason_count": 0
+  },
+  "human_checkpoint": "CloudFix never applies anything. It reads a plan and recommends. Applying the change, or refusing to, is the human's decision and always happens outside this tool.",
+  "score": {
+    "case_id": "c16_noop_only",
+    "difficulty": "easy",
+    "expected_verdict": "SAFE",
+    "found_verdict": "SAFE",
+    "verdict_correct": true,
+    "direction": "exact",
+    "dangerous_miss": false,
+    "over_block": false,
+    "caught_critical": null,
+    "reasons_total": 0,
+    "reasons_with_pointer": 0,
+    "reasons_unsupported": 0,
+    "dismissed_total": 0,
+    "repairs": 0,
+    "error": null
+  }
+}
