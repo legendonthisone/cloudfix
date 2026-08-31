@@ -685,6 +685,17 @@ is the Python standard library.
 access to the project files. Using a coding agent is required by the hackathon
 and this is the disclosure.
 
+**External review.** Before submission the writeup and the evaluation were put in
+front of three other AI assistants as adversarial reviewers: Amazon Quick,
+ChatGPT and Meta AI. They were used to attack the work, not to write it. The
+changes their criticism produced are listed in `IMPROVEMENT_CHANGELOG.md`
+alongside the code that implements each one, and the two contested labels
+re-scored by `python run.py sensitivity` came directly from that round. One
+suggestion was refused. Rewriting `c07` so that checkov genuinely could not see
+it would have been changing the evidence to fit the claim, so the scanner rung
+was instead given the same deletion protection and final snapshot checks that
+checkov ships, which makes the comparison harder for CloudFix rather than easier.
+
 **What existed before.** Nothing here predates the competition. Two files,
 `src/cloudfix/model.py` and `src/cloudfix/providers.py`, were carried over from
 my own earlier project in the same hackathon window
